@@ -8,37 +8,57 @@
 </style>
 <style>
 :root{color-scheme:dark}body{margin:0;background:#090810;color:#f5f1ff;font-family:system-ui,-apple-system,sans-serif;overflow-x:hidden}canvas,.glow{position:fixed;inset:0;pointer-events:none;width:100%;height:100%}.glow{background:radial-gradient(ellipse at 50% 110%,#9a64ff25,transparent 65%)}main{position:relative;min-height:100svh;display:grid;place-items:center;padding:40px 24px}.scene{width:min(900px,100%);text-align:center;animation:arrive .8s both}h1{font-size:clamp(2.2rem,6vw,4.6rem);line-height:1.15;letter-spacing:-.045em;font-weight:500;margin:0 auto 44px;max-width:900px}h1 em{font-family:Georgia,serif;color:#c7b1ff;font-weight:400}h1:focus{outline:none}.answers{position:relative;width:min(460px,100%);height:210px;margin:auto;display:flex;justify-content:center;gap:18px;align-items:flex-start}.btn{width:136px;min-height:56px;border-radius:14px;font-size:1rem;transition:background .2s,box-shadow .2s}.yes{background:#ffffff06;color:#d3cadf;border:1px solid #ffffff30}.yes:hover{background:#ffffff15;color:white;border-color:#c7b1ff}.no{background:#c7b1ff;color:#201331;border:1px solid #c7b1ff;box-shadow:0 6px 35px #a878ff20}.no:hover{background:#ddceff;color:#201331;box-shadow:0 6px 50px #a878ff40}.yes.moved{position:absolute;transition:left .16s ease,top .16s ease}button:focus-visible{outline:3px solid #eadfff;outline-offset:5px}.result-text{color:#b4a9c6;font-size:1.1rem;margin-top:-20px;margin-bottom:32px}.restart{width:auto;background:#ffffff08;border:1px solid #ffffff25;color:#d5c9e6;padding:12px 24px}.restart:hover{background:#ffffff15;color:white}.result-symbol{font-size:64px;color:#c7b1ff;margin-bottom:24px;text-shadow:0 0 40px #b78aff66}[hidden]{display:none!important}#confetti{position:fixed;inset:0;overflow:hidden;pointer-events:none}.piece{position:absolute;top:-20px;width:7px;height:13px;animation:fall var(--duration) var(--delay) ease-in forwards}.noscript{position:fixed;bottom:24px;width:100%;text-align:center}@keyframes arrive{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}@keyframes fall{to{transform:translate(var(--drift),110vh) rotate(680deg);opacity:.2}}@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.piece{display:none}}@media(max-width:480px){.btn{width:116px}.restart{width:auto}h1{font-size:clamp(2rem,8vw,2.7rem)}}
+</style><style>
+main{padding-right:150px}.level-panel{position:fixed;right:22px;top:50%;transform:translateY(-50%);z-index:10;width:104px;padding:20px 10px;border:1px solid #ffffff20;border-radius:22px;background:#121019e8;backdrop-filter:blur(16px);text-align:center;box-shadow:0 20px 65px #0005}.level-panel label{font-size:14px;color:#c1b8ce;display:block}.level-value{font-size:30px;font-weight:650;color:var(--level-color,#67df9e);display:block;margin:5px 0}.slider-wrap{height:224px;display:flex;justify-content:center;gap:14px;margin:14px 0}.level-range{appearance:none;writing-mode:vertical-lr;direction:rtl;width:10px;height:224px;border-radius:20px;background:linear-gradient(to top,#63df9c,#b9e16c,#f3ce63,#f39a61,#f16c83);cursor:pointer;margin:0}.level-range::-webkit-slider-thumb{appearance:none;width:24px;height:24px;background:#fff;border:4px solid #221c30;border-radius:50%;box-shadow:0 0 0 2px var(--level-color,#67df9e)}.level-range::-moz-range-thumb{width:17px;height:17px;background:#fff;border:4px solid #221c30;border-radius:50%}.level-range:focus-visible{outline:2px solid white;outline-offset:8px}.ticks{display:flex;flex-direction:column;justify-content:space-between;font-size:13px;color:#b8adca;pointer-events:none}.level-name{font-size:13px;font-weight:600;color:var(--level-color,#67df9e);display:block}.level-help{font-size:11px;line-height:1.5;color:#aca1bb;display:block;margin-top:8px;min-height:50px}.ghost{position:absolute;pointer-events:none;opacity:.22;border:1px dashed #c7b1ff;color:#c7b1ff;border-radius:14px;padding:15px 25px;min-width:100px;transition:opacity .2s}.yes{z-index:2}.no{position:relative;z-index:3}.answers{isolation:isolate}.no:focus-visible,.yes:focus-visible{transform:none!important}.level-panel:before{content:'';position:absolute;inset:0;border-radius:22px;pointer-events:none;box-shadow:inset 0 0 30px color-mix(in srgb,var(--level-color,#67df9e) 7%,transparent)}
+@media(max-width:600px){main{padding-right:102px;padding-left:16px}.level-panel{right:10px;width:78px;padding:15px 6px}.level-help{font-size:10px}.level-name{font-size:11px}.slider-wrap,.level-range{height:180px}.answers{gap:10px}.answers .btn{width:90px;min-width:0}.scene h1{font-size:clamp(1.7rem,6vw,2.7rem)}}
 </style></head><body>
 <canvas id="gravity" aria-hidden="true"></canvas><div class="glow" aria-hidden="true"></div>
-<main class="container-fluid"><section id="question" class="scene" aria-labelledby="title"><h1 id="title" tabindex="-1">Willst du dich<br><em>exmatrikulieren?</em></h1><div class="answers" id="answers"><button type="button" id="yes" class="btn yes">Ja</button><button type="button" id="no" class="btn no">Nein</button></div></section>
+<aside class="level-panel" aria-label="Schwierigkeitsgrad"><label for="level">LEVEL</label><output class="level-value" id="level-value" for="level">1</output><div class="slider-wrap"><input type="range" id="level" class="level-range" min="1" max="5" step="1" value="1" aria-describedby="level-name level-help"><div class="ticks" aria-hidden="true"><span>5</span><span>4</span><span>3</span><span>2</span><span>1</span></div></div><span id="level-name" class="level-name">Leicht</span><span id="level-help" class="level-help">8 kleine Ausweichmanöver</span></aside><main class="container-fluid"><section id="question" class="scene" aria-labelledby="title"><h1 id="title" tabindex="-1">Willst du dich<br><em>exmatrikulieren?</em></h1><div class="answers" id="answers"><button type="button" id="yes" class="btn yes">Ja</button><button type="button" id="no" class="btn no">Nein</button></div></section>
 <section id="result" class="scene" hidden aria-labelledby="result-title"><div id="symbol" class="result-symbol" aria-hidden="true"></div><h1 id="result-title" tabindex="-1"></h1><p id="result-text" class="result-text"></p><button type="button" class="btn restart" id="restart">Nochmal</button></section></main><div id="confetti" aria-hidden="true"></div><noscript><p class="noscript">Bitte aktiviere JavaScript im Browser.</p></noscript>
 <script>
 'use strict';
 const $=id=>document.getElementById(id), reduced=matchMedia('(prefers-reduced-motion: reduce)');
-const prompts=['Willst du dich wirklich exmatrikulieren?','Möchtest du dein Studium tatsächlich beenden?','Letzte Nachfrage: Willst du dich exmatrikulieren?'];
-let dodges=0,round=0,finished=false;
+const levels=[
+ {name:'Leicht',color:'#67df9e',dodges:8,rounds:3,help:'8 kleine Ausweichmanöver'},
+ {name:'Fluchtmodus',color:'#b9e16c',dodges:12,rounds:4,help:'12 Sprünge quer durchs Feld'},
+ {name:'Schrumpfkurs',color:'#f3ce63',dodges:16,rounds:5,help:'16 Sprünge. Ja wird kleiner.'},
+ {name:'Geisterstunde',color:'#f39a61',dodges:20,rounds:6,help:'20 Sprünge mit Geisterkopien'},
+ {name:'Endgegner',color:'#f16c83',dodges:24,rounds:7,help:'24 Sprünge. Ja flieht von allein.'}
+];
+const prompts=['Willst du dich wirklich exmatrikulieren?','Möchtest du dein Studium tatsächlich beenden?','Willst du deinen Studierendenausweis wirklich abgeben?','Möchtest du auf die nächste Klausurenphase verzichten?','Willst du wirklich ohne Mensarabatt weitermachen?','Möchtest du das Studium endgültig hinter dir lassen?','Letzte Nachfrage: Willst du dich exmatrikulieren?'];
+let level=1,dodges=0,round=0,finished=false,autoTimer=null,lastJump=0;
+function resetPosition(){const yes=$('yes');yes.classList.remove('moved');yes.style.left='';yes.style.top='';yes.style.transform='';document.querySelectorAll('.ghost').forEach(g=>g.remove());}
+function stopAuto(){clearInterval(autoTimer);autoTimer=null;}
+function startAuto(){stopAuto();if(level===5&&!reduced.matches&&!document.hidden&&!finished&&round===0&&dodges<levels[level-1].dodges)autoTimer=setInterval(()=>dodge(),850);}
 function dodge(){
- if(finished||round>0||dodges>=8||reduced.matches)return false;
- const area=$('answers'),yes=$('yes');
- const positions=[[0,85],[1,145],[0,145],[1,85]];
- const [side,top]=positions[dodges%positions.length];dodges++;
- yes.classList.add('moved');yes.style.left=(side?Math.max(0,area.clientWidth-yes.offsetWidth):0)+'px';yes.style.top=top+'px';return true;
+ const cfg=levels[level-1];if(finished||round>0||dodges>=cfg.dodges||reduced.matches){stopAuto();return false;}
+ // Pro Annäherung nur ein Sprung, auch wenn Browser weitere Pointer-Events erzeugt.
+ if(Date.now()-lastJump<180)return false;lastJump=Date.now();
+ const area=$('answers'),yes=$('yes'),maxX=Math.max(0,area.clientWidth-yes.offsetWidth);
+ if(level>=4){const ghost=document.createElement('span');ghost.className='ghost';ghost.textContent='Ja';ghost.setAttribute('aria-hidden','true');ghost.style.left=yes.style.left||'0px';ghost.style.top=yes.style.top||'0px';area.append(ghost);setTimeout(()=>ghost.remove(),1000);}
+ let x,y;if(level===1){const positions=[[0,85],[1,145],[0,145],[1,85]];const [side,top]=positions[dodges%4];x=side?maxX:0;y=top;}else{x=dodges%2?maxX*(.65+Math.random()*.35):maxX*Math.random()*.35;y=85+Math.random()*65;}
+ dodges++;yes.classList.add('moved');yes.style.left=x+'px';yes.style.top=y+'px';
+ if(level>=3)yes.style.transform='scale('+Math.max(.68,1-dodges*.025)+') rotate('+(level>=4?(dodges%2?8:-8):0)+'deg)';
+ if(dodges>=cfg.dodges){stopAuto();yes.style.transform='';}return true;
 }
 $('yes').addEventListener('pointerenter',e=>{if(e.pointerType==='mouse')dodge()});
 $('yes').addEventListener('click',e=>{
- if(e.detail>0&&dodge())return;
- if(round<prompts.length){$('title').textContent=prompts[round++];resetPosition();$('title').focus({preventScroll:true});}else finish(true);
+ if(e.detail>0&&round===0&&dodges<levels[level-1].dodges&&!reduced.matches){dodge();return;}
+ stopAuto();const count=levels[level-1].rounds;
+ if(round<count){$('title').textContent=(round===count-1)?prompts[6]:prompts[round];round++;resetPosition();$('title').focus({preventScroll:true});}else finish(true);
 });
-function resetPosition(){$('yes').classList.remove('moved');$('yes').style.left='';$('yes').style.top='';}
 $('no').addEventListener('click',()=>finish(false));
 function finish(yes){
- finished=true;$('question').hidden=true;$('result').hidden=false;
+ finished=true;stopAuto();resetPosition();$('question').hidden=true;$('result').hidden=false;
  $('symbol').textContent=yes?'☾':'✦';$('result-title').textContent=yes?'Na gut …':'Du bleibst dabei!';
  $('result-text').textContent=yes?'Deine Antwort steht fest.':'Die nächste Vorlesung wartet schon.';
  $('result-title').focus({preventScroll:true});if(!yes&&!reduced.matches)celebrate();
 }
-$('restart').addEventListener('click',()=>location.reload());
+function resetGame(){stopAuto();dodges=0;round=0;finished=false;lastJump=0;resetPosition();$('question').hidden=false;$('result').hidden=true;$('confetti').replaceChildren();$('title').innerHTML='Willst du dich<br><em>exmatrikulieren?</em>';startAuto();}
+$('restart').addEventListener('click',resetGame);
+$('level').addEventListener('input',()=>{level=Number($('level').value);const cfg=levels[level-1];$('level-value').textContent=level;$('level-name').textContent=cfg.name;$('level-help').textContent=cfg.help;$('level').setAttribute('aria-valuetext','Level '+level+': '+cfg.name);document.documentElement.style.setProperty('--level-color',cfg.color);resetGame();});
 addEventListener('resize',()=>{if($('yes').classList.contains('moved'))$('yes').style.left=Math.min(parseFloat($('yes').style.left)||0,Math.max(0,$('answers').clientWidth-$('yes').offsetWidth))+'px'});
+document.addEventListener('visibilitychange',startAuto);reduced.addEventListener('change',startAuto);
 function celebrate(){const colors=['#c7b1ff','#fff','#dba5e8','#a389e8','#e4cd96'];for(let i=0;i<80;i++){const p=document.createElement('i');p.className='piece';p.style.cssText=`left:${Math.random()*100}%;background:${colors[i%5]};--duration:${2.6+Math.random()*2}s;--delay:${Math.random()*.6}s;--drift:${Math.random()*200-100}px`; $('confetti').append(p)}setTimeout(()=>$('confetti').replaceChildren(),5500)}
 const canvas=$('gravity'),ctx=canvas.getContext('2d');let w=0,h=0,frame=0,last=0;
 const trails=Array.from({length:32},(_,i)=>({lane:i/31,t:Math.random(),speed:.035+Math.random()*.045}));
